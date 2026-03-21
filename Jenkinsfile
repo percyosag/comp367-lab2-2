@@ -1,41 +1,44 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'maven3' 
+	docker 'docker'
+    }
+
+    environment {
+        DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
+        DOCKER_IMAGE = "percyosag/comp367-lab3:latest"
+    }
 
     stages {
-        stage('Checkout') {
+        stage('Check out') { // [cite: 17]
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build maven project') { // [cite: 18]
             steps {
-                script {
-                    docker.image('maven:3.9.6-eclipse-temurin-17').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'mvn clean package'
-                    }
-                }
+                sh 'mvn clean package'
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker login') { // [cite: 20]
             steps {
-                sh 'docker build -t comp367-app .'
+                sh "echo \$DOCKER_HUB_CREDS_PSW | docker login -u \$DOCKER_HUB_CREDS_USR --password-stdin"
             }
         }
 
-        stage('Docker Login') {
+        stage('Docker build') { // [cite: 21]
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
-                }
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
-        stage('Docker Push') {
-            steps {
-                sh 'docker tag comp367-app percybuilder/comp367-app:latest'
-                sh 'docker push percybuilder/comp367-app:latest'
+        stage('Docker push') { // 
+	steps {
+                sh "docker push ${DOCKER_IMAGE}"
             }
         }
     }
