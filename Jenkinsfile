@@ -10,7 +10,11 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                script {
+                    docker.image('maven:3.9.6-eclipse-temurin-17').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+                        sh 'mvn clean package'
+                    }
+                }
             }
         }
 
