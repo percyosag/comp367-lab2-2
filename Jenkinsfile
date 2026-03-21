@@ -1,8 +1,11 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'maven3' // This must match the name you gave in Global Tool Configuration
+    }
 
     environment {
-        // Use the ID you created in the Jenkins Credentials step
         DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "percyosag/comp367-lab3:latest"
     }
