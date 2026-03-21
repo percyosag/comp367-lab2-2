@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
-        DOCKER_IMAGE = "percyosag/comp367-lab3:latest"
+        DOCKER_IMAGE = "percybuilder/comp367-lab3:latest"
     }
     
     stages {
