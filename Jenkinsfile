@@ -14,6 +14,7 @@ pipeline {
     stages {
         stage('Check out') { // [cite: 17]
             steps {
+	    cleanWs()
                 checkout scm
             }
         }
